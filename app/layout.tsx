@@ -7,10 +7,9 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading", weight: ["400", "500", "600", "700"] });
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", weight: ["400", "500"] });
 
-const SITE_URL = "https://milesandsmiles.run";
+const SITE_URL = "https://miles-smiles-eight.vercel.app";
 const TITLE = "Miles & Smiles Run Club — Monrovia";
-const DESCRIPTION =
-  "A no-drop run club for every pace. We run every Thursday and open the roads to everyone on the 1st and 3rd Saturday of each month. Based in Monrovia.";
+const DESCRIPTION = "Miles & Smile started with a simple idea: running is better when you don't do it alone.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
