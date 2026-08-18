@@ -6,7 +6,7 @@ import { Package, Clock, DollarSign } from "lucide-react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { PageHeading } from "@/components/admin/PageHeading";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { updateOrderStatus } from "@/lib/firestore/orders";
+import { updateOrderStatusAction } from "@/app/(admin)/admin/(protected)/orders/actions";
 import { formatDate } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 import type { Order, OrderStatus } from "@/types/firestore";
@@ -89,7 +89,7 @@ export function OrdersView({ initialOrders }: { initialOrders: Order[] }) {
                     value={order.status}
                     onValueChange={async (value) => {
                       const status = value as OrderStatus;
-                      await updateOrderStatus(order.id, status);
+                      await updateOrderStatusAction(order.id, status);
                       setOrders((prev) => prev.map((o) => (o.id === order.id ? { ...o, status } : o)));
                       toast.success("Order updated");
                     }}

@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Hero } from "@/components/public/Hero";
 import { StatsBand } from "@/components/public/StatsBand";
@@ -11,12 +8,11 @@ import { getContentBlock } from "@/lib/firestore/content";
 import { listUpcomingEvents } from "@/lib/firestore/events";
 import { listProducts } from "@/lib/firestore/products";
 import { listGalleryImages } from "@/lib/firestore/gallery";
-import type { GalleryImage, Product, RunEvent } from "@/types/firestore";
 
 // Sensible defaults so the page looks right before any content is seeded
 // in the admin panel — an empty store shouldn't mean an empty page.
 const HERO_DEFAULTS = {
-  title: "Built by the people who show up",
+  title: "Built by the people who show up.",
   subtitle:
     "Miles & Smile started with a simple idea: running is better when you don't do it alone.\n\nWhat started as a few people showing up has grown into a community that supports each other well beyond the miles.",
   ctaLabel: "Join a run",
@@ -24,32 +20,21 @@ const HERO_DEFAULTS = {
 
 const STATS_DEFAULTS = { members: "240+", km: "58,000", years: "1", weekly: "3" };
 
-export default function LandingPage() {
-  const [heroValue, setHeroValue] = useState(HERO_DEFAULTS);
-  const [statsValue, setStatsValue] = useState(STATS_DEFAULTS);
-  const [events, setEvents] = useState<RunEvent[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [gallery, setGallery] = useState<GalleryImage[]>([]);
-  const [loaded, setLoaded] = useState(false);
+// Homepage data lives in Firestore — fetch it server-side so the page ships
+// fully rendered instead of flashing blank while a client fetch resolves.
+export const dynamic = "force-dynamic";
 
-  useEffect(() => {
-    Promise.all([
-      getContentBlock("landing-hero"),
-      getContentBlock("landing-stats"),
-      listUpcomingEvents(3),
-      listProducts({ activeOnly: true }),
-      listGalleryImages(),
-    ]).then(([hero, stats, events, products, gallery]) => {
-      setHeroValue({ ...HERO_DEFAULTS, ...hero?.value });
-      setStatsValue({ ...STATS_DEFAULTS, ...stats?.value });
-      setEvents(events);
-      setProducts(products);
-      setGallery(gallery);
-      setLoaded(true);
-    });
-  }, []);
+export default async function LandingPage() {
+  const [hero, stats, events, products, gallery] = await Promise.all([
+    getContentBlock("landing-hero"),
+    getContentBlock("landing-stats"),
+    listUpcomingEvents(3),
+    listProducts({ activeOnly: true }),
+    listGalleryImages(),
+  ]);
 
-  if (!loaded) return null;
+  const heroValue = { ...HERO_DEFAULTS, ...hero?.value };
+  const statsValue = { ...STATS_DEFAULTS, ...stats?.value };
 
   return (
     <>
@@ -104,7 +89,7 @@ export default function LandingPage() {
         <section className="py-14 sm:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="flex flex-wrap items-end justify-between gap-2">
-              <h2 className="font-heading text-2xl tracking-wide sm:text-3xl">From the shop</h2>
+              <h2 className="font-heading text-2xl tracking-wide sm:text-3xl">Shop</h2>
               <Link href="/shop" className="text-sm font-semibold text-brand-primary hover:underline">
                 Shop all →
               </Link>

@@ -40,7 +40,7 @@ export function GalleryForm({ submitLabel, initialValues, onSubmit }: GalleryFor
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="mb-1 block text-xs font-medium text-text-muted">Photo *</label>
-        <ImageUpload value={url} onChange={setUrl} aspect="square" />
+        <ImageUpload value={url} onChange={setUrl} folder="gallery" aspect="square" />
       </div>
       <div>
         <label className="mb-1 block text-xs font-medium text-text-muted">Caption</label>

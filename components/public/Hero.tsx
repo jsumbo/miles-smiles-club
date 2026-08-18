@@ -47,10 +47,10 @@ export function Hero({ title, subtitle, ctaLabel }: HeroProps) {
             {ctaLabel}
           </JoinRunButton>
           <Link
-            href="/shop"
+            href="/account/join"
             className="rounded-md border border-border bg-surface-card px-6 py-3 text-center text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
           >
-            Shop the crew merch
+            Become a member
           </Link>
         </div>
       </div>

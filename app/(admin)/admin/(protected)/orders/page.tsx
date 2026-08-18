@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Package } from "lucide-react";
 import { OrdersView } from "@/components/admin/OrdersView";
-import { listOrders } from "@/lib/firestore/orders";
+import { PageHeading } from "@/components/admin/PageHeading";
+import { StatCardsSkeleton, TableSkeleton } from "@/components/admin/skeletons";
+import { listOrdersAction } from "./actions";
 import type { Order } from "@/types/firestore";
 
 export default function AdminOrdersPage() {
@@ -10,13 +13,21 @@ export default function AdminOrdersPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    listOrders().then((orders) => {
+    listOrdersAction().then((orders) => {
       setOrders(orders);
       setLoaded(true);
     });
   }, []);
 
-  if (!loaded) return null;
+  if (!loaded) {
+    return (
+      <div>
+        <PageHeading icon={Package} title="Orders" />
+        <StatCardsSkeleton count={3} />
+        <TableSkeleton cols={7} />
+      </div>
+    );
+  }
 
   return <OrdersView initialOrders={orders} />;
 }

@@ -1,7 +1,16 @@
-import { Flag, MapPin, Route } from "lucide-react";
+import Link from "next/link";
+import { Flag, MapPin, Route, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { RunEvent } from "@/types/firestore";
 
-export function EventCard({ event }: { event: RunEvent }) {
+export interface EventRsvpState {
+  signedIn: boolean;
+  going: boolean;
+  pending: boolean;
+  onToggle: () => void;
+}
+
+export function EventCard({ event, rsvp }: { event: RunEvent; rsvp?: EventRsvpState }) {
   const date = new Date(`${event.date}T${event.time || "00:00"}`);
   const formatted = date.toLocaleDateString("en-US", {
     weekday: "long",
@@ -38,6 +47,34 @@ export function EventCard({ event }: { event: RunEvent }) {
             <Route className="h-4 w-4 text-brand-secondary" /> {event.distanceKm} km
           </span>
         </div>
+
+        {rsvp && (
+          <div className="mt-4 border-t border-border pt-4">
+            {rsvp.signedIn ? (
+              <button
+                type="button"
+                onClick={rsvp.onToggle}
+                disabled={rsvp.pending}
+                className={cn(
+                  "flex w-full items-center justify-center gap-1.5 rounded-md px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50",
+                  rsvp.going
+                    ? "bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20"
+                    : "bg-brand-primary text-white shadow-card hover:shadow-card-hover"
+                )}
+              >
+                {rsvp.going && <Check className="h-4 w-4" />}
+                {rsvp.pending ? "Saving…" : rsvp.going ? "You're going" : "RSVP"}
+              </button>
+            ) : (
+              <Link
+                href="/account/login"
+                className="block w-full rounded-md border border-border px-4 py-2 text-center text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
+              >
+                Sign in to RSVP
+              </Link>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

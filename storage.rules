@@ -1,0 +1,12 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Uploads go through a server action using the Admin SDK, which always
+    // bypasses these rules. Public image URLs carry a firebaseStorageDownloadTokens
+    // capability token, which Firebase serves regardless of this read rule.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

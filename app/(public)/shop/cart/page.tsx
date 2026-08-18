@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ConfettiBurst } from "@/components/public/ConfettiBurst";
 import { useCart } from "@/components/cart/cart-context";
-import { createOrder } from "@/lib/firestore/orders";
+import { useMemberAuth } from "@/components/member/member-auth-context";
+import { placeOrderAction } from "@/app/(public)/shop/actions";
 
 export default function CartPage() {
   const { items, removeItem, setQuantity, totalCents, clear } = useCart();
+  const { firebaseUser } = useMemberAuth();
   const [placing, setPlacing] = useState(false);
   const [placed, setPlaced] = useState(false);
 
@@ -22,21 +24,26 @@ export default function CartPage() {
     setPlacing(true);
     const fd = new FormData(e.currentTarget);
 
-    await createOrder({
-      customerName: fd.get("name") as string,
-      email: fd.get("email") as string,
-      phone: fd.get("phone") as string,
-      items: items.map((i) => ({
-        productId: i.productId,
-        productName: i.productName,
-        variantId: i.variantId,
-        variantLabel: i.variantLabel,
-        quantity: i.quantity,
-        priceCents: i.priceCents,
-      })),
-      totalCents,
-      fulfillmentNote: (fd.get("note") as string) || "",
-    });
+    const idToken = firebaseUser ? await firebaseUser.getIdToken() : undefined;
+
+    await placeOrderAction(
+      {
+        customerName: fd.get("name") as string,
+        email: fd.get("email") as string,
+        phone: fd.get("phone") as string,
+        items: items.map((i) => ({
+          productId: i.productId,
+          productName: i.productName,
+          variantId: i.variantId,
+          variantLabel: i.variantLabel,
+          quantity: i.quantity,
+          priceCents: i.priceCents,
+        })),
+        totalCents,
+        fulfillmentNote: (fd.get("note") as string) || "",
+      },
+      idToken
+    );
 
     clear();
     setPlacing(false);

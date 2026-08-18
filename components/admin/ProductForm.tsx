@@ -104,7 +104,7 @@ export function ProductForm({ submitLabel, initialValues, onSubmit }: ProductFor
       </div>
       <div>
         <label className="mb-1 block text-xs font-medium text-text-muted">Photo</label>
-        <ImageUpload value={imageUrl} onChange={setImageUrl} aspect="square" />
+        <ImageUpload value={imageUrl} onChange={setImageUrl} folder="products" aspect="square" />
       </div>
 
       <TagListInput label="Sizes" placeholder="e.g. M" values={sizes} onChange={setSizes} />

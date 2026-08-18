@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, UserPlus, LayoutDashboard, ShoppingBag, Images, Package } from "lucide-react";
+import { CalendarDays, UserPlus, LayoutDashboard, ShoppingBag, Images, Package, IdCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: "/admin/events", label: "Runs", icon: CalendarDays },
   { href: "/admin/shop", label: "Shop", icon: ShoppingBag },
   { href: "/admin/orders", label: "Orders", icon: Package },
+  { href: "/admin/members", label: "Members", icon: IdCard },
   { href: "/admin/gallery", label: "Gallery", icon: Images },
   { href: "/admin/join-requests", label: "Sign Ups", icon: UserPlus },
 ];

@@ -11,8 +11,8 @@ const LINKS = [
 ];
 
 const SOCIALS = [
-  { href: "https://instagram.com", label: "Instagram", icon: Instagram },
-  { href: "https://facebook.com", label: "Facebook", icon: Facebook },
+  { href: "https://www.instagram.com/miles_smiles_runclub/", label: "Instagram", icon: Instagram },
+  { href: "https://www.facebook.com/milesandsmilesrunclub", label: "Facebook", icon: Facebook },
   { href: "https://www.strava.com/clubs/2075589", label: "Strava", image: "/strava-logo-png-4.webp" },
 ];
 

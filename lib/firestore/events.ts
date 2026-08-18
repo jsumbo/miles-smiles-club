@@ -1,11 +1,11 @@
-import { ensureSeeded, genId, readAll, writeAll } from "@/lib/firestore/store";
+import { adminDb } from "@/lib/firebase/admin";
 import type { RunEvent } from "@/types/firestore";
 
-const KEY = "events";
+const EVENTS = "events";
 
 export async function listEvents(): Promise<RunEvent[]> {
-  ensureSeeded();
-  return readAll<RunEvent>(KEY).sort((a, b) => a.date.localeCompare(b.date));
+  const snap = await adminDb.collection(EVENTS).orderBy("date", "asc").get();
+  return snap.docs.map((d) => d.data() as RunEvent);
 }
 
 export async function listUpcomingEvents(limit = 3): Promise<RunEvent[]> {
@@ -14,25 +14,17 @@ export async function listUpcomingEvents(limit = 3): Promise<RunEvent[]> {
   return events.filter((e) => e.date >= today).slice(0, limit);
 }
 
-export async function createEvent(input: Omit<RunEvent, "id" | "createdAt">) {
-  ensureSeeded();
-  const events = readAll<RunEvent>(KEY);
-  const id = genId();
-  events.push({ ...input, id, createdAt: Date.now() });
-  writeAll(KEY, events);
-  return id;
+export async function createEvent(input: Omit<RunEvent, "id" | "createdAt">): Promise<string> {
+  const ref = adminDb.collection(EVENTS).doc();
+  const event: RunEvent = { ...input, id: ref.id, createdAt: Date.now() };
+  await ref.set(event);
+  return ref.id;
 }
 
-export async function updateEvent(id: string, input: Partial<Omit<RunEvent, "id" | "createdAt">>) {
-  ensureSeeded();
-  const events = readAll<RunEvent>(KEY).map((e) => (e.id === id ? { ...e, ...input } : e));
-  writeAll(KEY, events);
+export async function updateEvent(id: string, input: Partial<Omit<RunEvent, "id" | "createdAt">>): Promise<void> {
+  await adminDb.collection(EVENTS).doc(id).update(input);
 }
 
-export async function deleteEvent(id: string) {
-  ensureSeeded();
-  writeAll(
-    KEY,
-    readAll<RunEvent>(KEY).filter((e) => e.id !== id)
-  );
+export async function deleteEvent(id: string): Promise<void> {
+  await adminDb.collection(EVENTS).doc(id).delete();
 }

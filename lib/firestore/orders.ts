@@ -1,24 +1,25 @@
-import { ensureSeeded, genId, readAll, writeAll } from "@/lib/firestore/store";
+import { adminDb } from "@/lib/firebase/admin";
 import type { Order, OrderStatus } from "@/types/firestore";
 
-const KEY = "orders";
+const ORDERS = "orders";
 
 export async function listOrders(): Promise<Order[]> {
-  ensureSeeded();
-  return readAll<Order>(KEY).sort((a, b) => b.createdAt - a.createdAt);
+  const snap = await adminDb.collection(ORDERS).orderBy("createdAt", "desc").get();
+  return snap.docs.map((d) => d.data() as Order);
 }
 
-export async function createOrder(input: Omit<Order, "id" | "createdAt" | "status">) {
-  ensureSeeded();
-  const orders = readAll<Order>(KEY);
-  const id = genId();
-  orders.push({ ...input, id, status: "pending", createdAt: Date.now() });
-  writeAll(KEY, orders);
-  return id;
+export async function listOrdersForMember(memberId: string): Promise<Order[]> {
+  const snap = await adminDb.collection(ORDERS).where("memberId", "==", memberId).get();
+  return snap.docs.map((d) => d.data() as Order).sort((a, b) => b.createdAt - a.createdAt);
 }
 
-export async function updateOrderStatus(id: string, status: OrderStatus) {
-  ensureSeeded();
-  const orders = readAll<Order>(KEY).map((o) => (o.id === id ? { ...o, status } : o));
-  writeAll(KEY, orders);
+export async function createOrder(input: Omit<Order, "id" | "createdAt" | "status">): Promise<string> {
+  const ref = adminDb.collection(ORDERS).doc();
+  const order: Order = { ...input, id: ref.id, status: "pending", createdAt: Date.now() };
+  await ref.set(order);
+  return ref.id;
+}
+
+export async function updateOrderStatus(id: string, status: OrderStatus): Promise<void> {
+  await adminDb.collection(ORDERS).doc(id).update({ status });
 }

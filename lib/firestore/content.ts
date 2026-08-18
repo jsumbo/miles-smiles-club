@@ -1,7 +1,9 @@
-import { readRecord } from "@/lib/firestore/store";
+import { adminDb } from "@/lib/firebase/admin";
 import type { ContentBlock } from "@/types/firestore";
 
+const CONTENT = "content";
+
 export async function getContentBlock(id: string): Promise<ContentBlock | null> {
-  const all = readRecord<ContentBlock>("content");
-  return all[id] ?? null;
+  const snap = await adminDb.collection(CONTENT).doc(id).get();
+  return snap.exists ? (snap.data() as ContentBlock) : null;
 }

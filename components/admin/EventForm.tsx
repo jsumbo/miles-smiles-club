@@ -96,7 +96,7 @@ export function EventForm({ submitLabel, initialValues, onSubmit }: EventFormPro
       </div>
       <div>
         <label className="mb-1 block text-xs font-medium text-text-muted">Photo</label>
-        <ImageUpload value={imageUrl} onChange={setImageUrl} aspect="video" />
+        <ImageUpload value={imageUrl} onChange={setImageUrl} folder="events" aspect="video" />
         <p className="mt-1 text-xs text-text-muted">
           {isEditing ? "Replace to change the run's photo." : "Leave blank to use the default run photo."}
         </p>

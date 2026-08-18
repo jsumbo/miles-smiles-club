@@ -9,7 +9,7 @@ import { Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { useCart } from "@/components/cart/cart-context";
-import { getProduct } from "@/lib/firestore/products";
+import { getProductAction } from "../../actions";
 import type { Product } from "@/types/firestore";
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -23,7 +23,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    getProduct(slug).then((product) => {
+    getProductAction(slug).then((product) => {
       setProduct(product);
       setSize(product?.sizes[0] ?? null);
       setColor(product?.colors[0] ?? null);

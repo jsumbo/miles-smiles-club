@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { EventCard } from "@/components/public/EventCard";
+import { useEffect, useState } from "react";
+import { RunsList } from "@/components/public/RunsList";
 import { JoinRunButton } from "@/components/public/JoinRunButton";
 import { Button } from "@/components/ui/button";
-import { getContentBlock } from "@/lib/firestore/content";
-import { listEvents } from "@/lib/firestore/events";
-import type { RunEvent } from "@/types/firestore";
+import { getContentBlockAction } from "../actions";
 
 const STRAVA_CLUB_URL = "https://www.strava.com/clubs/2075589";
 
@@ -15,67 +13,16 @@ const SCHEDULE_DEFAULTS = {
   body: "We run every Thursday as a core group, and open the roads to everyone on the 1st and 3rd Saturday of each month. No pressure, no pace requirement — just show up.",
 };
 
-const PAGE_SIZE = 6;
-
-function EventSection({
-  title,
-  emptyLabel,
-  events,
-}: {
-  title: string;
-  emptyLabel: string;
-  events: RunEvent[];
-}) {
-  const [showAll, setShowAll] = useState(false);
-  const visible = showAll ? events : events.slice(0, PAGE_SIZE);
-
-  return (
-    <div className="mt-12 sm:mt-16">
-      <h2 className="font-heading text-xl tracking-wide sm:text-2xl">{title}</h2>
-      {events.length > 0 ? (
-        <>
-          <div className="mt-6 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-            {visible.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-          {!showAll && events.length > PAGE_SIZE && (
-            <div className="mt-6 flex justify-center">
-              <Button variant="outline" onClick={() => setShowAll(true)}>
-                View all ({events.length})
-              </Button>
-            </div>
-          )}
-        </>
-      ) : (
-        <p className="mt-6 text-text-muted">{emptyLabel}</p>
-      )}
-    </div>
-  );
-}
-
 export default function RunsPage() {
   const [scheduleValue, setScheduleValue] = useState(SCHEDULE_DEFAULTS);
-  const [events, setEvents] = useState<RunEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    Promise.all([getContentBlock("about-schedule"), listEvents()]).then(([schedule, events]) => {
+    getContentBlockAction("about-schedule").then((schedule) => {
       setScheduleValue({ ...SCHEDULE_DEFAULTS, ...schedule?.value });
-      setEvents(events);
       setLoaded(true);
     });
   }, []);
-
-  const { upcoming, past } = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    return {
-      upcoming: events.filter((e) => e.date >= today),
-      past: events
-        .filter((e) => e.date < today)
-        .sort((a, b) => b.date.localeCompare(a.date)),
-    };
-  }, [events]);
 
   if (!loaded) return null;
 
@@ -102,17 +49,7 @@ export default function RunsPage() {
         </Button>
       </div>
 
-      <EventSection
-        title="Upcoming runs"
-        emptyLabel="Nothing on the calendar right now — check back soon, or ask in the group chat."
-        events={upcoming}
-      />
-
-      <EventSection
-        title="Past runs"
-        emptyLabel="No past runs logged yet."
-        events={past}
-      />
+      <RunsList />
     </section>
   );
 }

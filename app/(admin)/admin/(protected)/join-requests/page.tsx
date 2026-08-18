@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { UserPlus } from "lucide-react";
 import { JoinRequestsView } from "@/components/admin/JoinRequestsView";
-import { listJoinRequests } from "@/lib/firestore/joinRequests";
+import { PageHeading } from "@/components/admin/PageHeading";
+import { StatCardsSkeleton, TableSkeleton } from "@/components/admin/skeletons";
+import { listJoinRequestsAction } from "./actions";
 import type { JoinRequest } from "@/types/firestore";
 
 export default function AdminJoinRequestsPage() {
@@ -10,13 +13,21 @@ export default function AdminJoinRequestsPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    listJoinRequests().then((requests) => {
+    listJoinRequestsAction().then((requests) => {
       setRequests(requests);
       setLoaded(true);
     });
   }, []);
 
-  if (!loaded) return null;
+  if (!loaded) {
+    return (
+      <div>
+        <PageHeading icon={UserPlus} title="Sign ups" />
+        <StatCardsSkeleton count={3} />
+        <TableSkeleton cols={8} />
+      </div>
+    );
+  }
 
   return <JoinRequestsView requests={requests} />;
 }

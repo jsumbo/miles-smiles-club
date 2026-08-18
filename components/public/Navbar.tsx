@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/components/cart/cart-context";
-import { JoinRunButton } from "@/components/public/JoinRunButton";
+import { AccountMenu } from "@/components/public/AccountMenu";
 
 const LINKS = [
   { href: "/", label: "Home" },
@@ -56,9 +56,13 @@ export function Navbar() {
               </span>
             )}
           </Link>
-          <JoinRunButton className="hidden rounded-md bg-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-card transition-shadow hover:shadow-card-hover sm:inline-block">
-            Join a Run
-          </JoinRunButton>
+          <AccountMenu />
+          <Link
+            href="/shop"
+            className="hidden rounded-md bg-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-card transition-shadow hover:shadow-card-hover sm:inline-block"
+          >
+            Shop
+          </Link>
           <button
             type="button"
             className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-secondary md:hidden"
@@ -87,9 +91,13 @@ export function Navbar() {
               </Link>
             ))}
           </nav>
-          <JoinRunButton className="mt-3 block w-full rounded-md bg-brand-primary px-4 py-2.5 text-center text-sm font-semibold text-white shadow-card">
-            Join a Run
-          </JoinRunButton>
+          <Link
+            href="/shop"
+            onClick={() => setMobileOpen(false)}
+            className="mt-3 block w-full rounded-md bg-brand-primary px-4 py-2.5 text-center text-sm font-semibold text-white shadow-card"
+          >
+            Shop
+          </Link>
         </div>
       )}
     </header>

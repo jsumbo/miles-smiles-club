@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
+import { MemberAuthProvider } from "@/components/member/member-auth-context";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -45,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable} ${jetbrains.variable}`}>
       <body suppressHydrationWarning>
-        {children}
+        <MemberAuthProvider>{children}</MemberAuthProvider>
         <Toaster position="bottom-right" richColors />
       </body>
     </html>

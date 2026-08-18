@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { GalleryGrid } from "@/components/public/GalleryGrid";
-import { listGalleryImages } from "@/lib/firestore/gallery";
+import { listGalleryImagesAction } from "../actions";
 import type { GalleryImage } from "@/types/firestore";
 
 export default function GalleryPage() {
@@ -10,7 +10,7 @@ export default function GalleryPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    listGalleryImages().then((images) => {
+    listGalleryImagesAction().then((images) => {
       setImages(images);
       setLoaded(true);
     });

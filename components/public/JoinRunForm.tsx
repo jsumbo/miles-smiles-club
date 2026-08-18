@@ -1,24 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { genId, readAll, writeAll } from "@/lib/firestore/store";
-import type { JoinRequest, Gender } from "@/types/firestore";
+import { createJoinRequestAction } from "@/app/(public)/actions";
+import type { Gender } from "@/types/firestore";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-
-const GENDERS: { value: Gender; label: string }[] = [
-  { value: "female", label: "Female" },
-  { value: "male", label: "Male" },
-];
-
-const HOW_HEARD_OPTIONS = [
-  { value: "instagram", label: "Instagram" },
-  { value: "facebook", label: "Facebook" },
-  { value: "friend", label: "A friend" },
-  { value: "google", label: "Google search" },
-  { value: "flyer", label: "Flyer / poster" },
-  { value: "event", label: "Saw us at an event" },
-  { value: "other", label: "Other" },
-];
+import { GENDERS, HOW_HEARD_OPTIONS } from "@/lib/formOptions";
 
 export function JoinRunForm({ onSuccess }: { onSuccess: () => void }) {
   const [loading, setLoading] = useState(false);
@@ -37,8 +23,7 @@ export function JoinRunForm({ onSuccess }: { onSuccess: () => void }) {
     if (howHeard === "friend" && friendName) howHeardValue = `${howHeardLabel} (${friendName})`;
     if (howHeard === "event" && eventName) howHeardValue = `${howHeardLabel} (${eventName})`;
 
-    const request: JoinRequest = {
-      id: genId(),
+    await createJoinRequestAction({
       name: fd.get("name") as string,
       email: fd.get("email") as string,
       whatsapp: fd.get("whatsapp") as string,
@@ -46,12 +31,7 @@ export function JoinRunForm({ onSuccess }: { onSuccess: () => void }) {
       gender: (fd.get("gender") as Gender) || "female",
       address: fd.get("address") as string,
       howHeard: howHeardValue,
-      createdAt: Date.now(),
-    };
-
-    const existing = readAll<JoinRequest>("join-requests");
-    existing.push(request);
-    writeAll("join-requests", existing);
+    });
 
     setLoading(false);
     onSuccess();

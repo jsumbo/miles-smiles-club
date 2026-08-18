@@ -2,17 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, Images, LayoutDashboard, Package, ShoppingBag, UserPlus } from "lucide-react";
+import { CalendarDays, IdCard, Images, LayoutDashboard, Package, ShoppingBag, UserPlus } from "lucide-react";
 import { PageHeading } from "@/components/admin/PageHeading";
-import { listEvents } from "@/lib/firestore/events";
-import { listJoinRequests } from "@/lib/firestore/joinRequests";
-import { listProducts } from "@/lib/firestore/products";
-import { listOrders } from "@/lib/firestore/orders";
-import { listGalleryImages } from "@/lib/firestore/gallery";
+import { Skeleton } from "@/components/ui/skeleton";
+import { listEventsAction } from "@/app/(admin)/admin/(protected)/events/actions";
+import { listJoinRequestsAction } from "@/app/(admin)/admin/(protected)/join-requests/actions";
+import { listProductsAction } from "@/app/(admin)/admin/(protected)/shop/actions";
+import { listOrdersAction } from "@/app/(admin)/admin/(protected)/orders/actions";
+import { listGalleryImagesAction } from "@/app/(admin)/admin/(protected)/gallery/actions";
+import { listMembersAction } from "@/app/(admin)/admin/(protected)/members/actions";
 
 const CARDS = [
   { key: "runs", label: "Upcoming runs", href: "/admin/events", icon: CalendarDays },
   { key: "joinRequests", label: "Sign ups", href: "/admin/join-requests", icon: UserPlus },
+  { key: "members", label: "Members", href: "/admin/members", icon: IdCard },
   { key: "products", label: "Shop products", href: "/admin/shop", icon: ShoppingBag },
   { key: "orders", label: "Orders", href: "/admin/orders", icon: Package },
   { key: "gallery", label: "Gallery photos", href: "/admin/gallery", icon: Images },
@@ -24,18 +27,20 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
     Promise.all([
-      listEvents(),
-      listJoinRequests(),
-      listProducts(),
-      listOrders(),
-      listGalleryImages(),
-    ]).then(([events, joinRequests, products, orders, gallery]) => {
+      listEventsAction(),
+      listJoinRequestsAction(),
+      listProductsAction(),
+      listOrdersAction(),
+      listGalleryImagesAction(),
+      listMembersAction(),
+    ]).then(([events, joinRequests, products, orders, gallery, members]) => {
       setCounts({
         runs: events.filter((e) => e.date >= today).length,
         joinRequests: joinRequests.length,
         products: products.length,
         orders: orders.length,
         gallery: gallery.length,
+        members: members.length,
       });
     });
   }, []);
@@ -55,9 +60,11 @@ export default function AdminDashboardPage() {
               <card.icon className="h-4.5 w-4.5" />
             </div>
             <p className="mt-3 text-xs uppercase tracking-widest text-text-muted">{card.label}</p>
-            <p className="mt-1 font-mono text-3xl font-bold text-brand-primary">
-              {counts ? counts[card.key] : "—"}
-            </p>
+            {counts ? (
+              <p className="mt-1 font-mono text-3xl font-bold text-brand-primary">{counts[card.key]}</p>
+            ) : (
+              <Skeleton className="mt-2 h-8 w-14" />
+            )}
           </Link>
         ))}
       </div>
