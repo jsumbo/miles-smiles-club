@@ -1,15 +1,7 @@
-"use client";
+import { redirect } from "next/navigation";
+import { getAdminSession } from "@/lib/adminSession";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { getSession } from "@/lib/localAuth";
-
-export default function AdminIndexPage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace(getSession() ? "/admin/dashboard" : "/admin/login");
-  }, [router]);
-
-  return null;
+export default async function AdminIndexPage() {
+  const email = await getAdminSession();
+  redirect(email ? "/admin/dashboard" : "/admin/login");
 }
