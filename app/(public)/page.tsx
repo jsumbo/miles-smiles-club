@@ -20,9 +20,10 @@ const HERO_DEFAULTS = {
 
 const STATS_DEFAULTS = { members: "240+", km: "58,000", years: "1", weekly: "3" };
 
-// Homepage data lives in Firestore — fetch it server-side so the page ships
-// fully rendered instead of flashing blank while a client fetch resolves.
-export const dynamic = "force-dynamic";
+// Homepage data lives in Firestore but rarely changes, so render it once and
+// cache it — admin mutations call revalidatePath("/") to refresh on demand,
+// and this is a time-based fallback for edits made outside the app.
+export const revalidate = 300;
 
 export default async function LandingPage() {
   const [hero, stats, events, products, gallery] = await Promise.all([
